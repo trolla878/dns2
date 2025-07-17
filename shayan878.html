@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل DNS حرفه‌ای - Pahlavi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --secondary: #ff6b6b;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --success: #28a745;
+            --info: #17a2b8;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            display: flex;
+            padding: 15px;
+            background-color: var(--light);
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+            margin: 10px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .control-group h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .control-group h3 i {
+            margin-left: 8px;
+            color: var(--primary);
+        }
+        
+        .country-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+        
+        .country-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #eee;
+        }
+        
+        .country-item:hover {
+            background-color: #f0f4ff;
+            transform: translateY(-2px);
+        }
+        
+        .country-item.active {
+            background-color: #e1e8ff;
+            border-color: var(--primary);
+        }
+        
+        .country-flag {
+            width: 20px;
+            height: 15px;
+            margin-left: 8px;
+            border-radius: 2px;
+            object-fit: cover;
+        }
+        
+        .range-slider {
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .range-slider input {
+            width: 100%;
+        }
+        
+        .value-display {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 180px;
+        }
+        
+        .btn i {
+            margin-left: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5bef;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 107, 255, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e05a5a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .results {
+            padding: 20px;
+        }
+        
+        .result-box {
+            background-color: var(--light);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .result-box.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .result-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+        
+        .result-title i {
+            margin-left: 8px;
+            color: var(--primary);
+        }
+        
+        .dns-item {
+            background-color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .dns-address {
+            font-family: monospace;
+            font-size: 14px;
+        }
+        
+        .dns-type {
+            background-color: #e1e8ff;
+            color: var(--primary);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .copy-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+        
+        .copy-btn:hover {
+            background-color: #3a5bef;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            background-color: var(--light);
+            color: #666;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>vip33</h1>
+            <p>ساخته شده توسط 33</p>
+        </header>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h3><i class="fas fa-globe"></i> انتخاب کشور</h3>
+                <div class="country-list">
+                    <div class="country-item active" data-country="germany">
+                        <img src="https://flagcdn.com/w20/de.png" class="country-flag" alt="آلمان">
+                        آلمان
+                    </div>
+                    <div class="country-item" data-country="brazil">
+                        <img src="https://flagcdn.com/w20/br.png" class="country-flag" alt="برزیل">
+                        برزیل
+                    </div>
+                    <div class="country-item" data-country="lebanon">
+                        <img src="https://flagcdn.com/w20/lb.png" class="country-flag" alt="لبنان">
+                        لبنان
+                    </div>
+                    <div class="country-item" data-country="canada">
+                        <img src="https://flagcdn.com/w20/ca.png" class="country-flag" alt="کانادا">
+                        کانادا
+                    </div>
+                    <div class="country-item" data-country="iran">
+                        <img src="https://flagcdn.com/w20/ir.png" class="country-flag" alt="ایران">
+                        ایران
+                    </div>
+                    <div class="country-item" data-country="uae">
+                        <img src="https://flagcdn.com/w20/ae.png" class="country-flag" alt="امارات">
+                        امارات
+                    </div>
+                    <div class="country-item" data-country="iraq">
+                        <img src="https://flagcdn.com/w20/iq.png" class="country-flag" alt="عراق">
+                        عراق
+                    </div>
+                    <div class="country-item" data-country="usa">
+                        <img src="https://flagcdn.com/w20/us.png" class="country-flag" alt="آمریکا">
+                        آمریکا
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3><i class="fas fa-calendar-alt"></i> مدت اعتبار</h3>
+                <div class="range-slider">
+                    <input type="range" min="1" max="365" value="30" class="slider" id="daysSlider">
+                    <div class="value-display">
+                        <span>1 روز</span>
+                        <span id="daysValue">30 روز</span>
+                        <span>1 سال</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3><i class="fas fa-database"></i> حجم DNS</h3>
+                <div class="range-slider">
+                    <input type="range" min="1" max="100" value="50" class="slider" id="volumeSlider">
+                    <div class="value-display">
+                        <span>1 GB</span>
+                        <span id="volumeValue">50 GB</span>
+                        <span>100 GB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn btn-primary" id="generateIpv4">
+                <i class="fas fa-network-wired"></i> ساخت DNS نسل 4
+            </button>
+            <button class="btn btn-secondary" id="generateIpv6">
+                <i class="fas fa-server"></i> ساخت DNS نسل 6
+            </button>
+        </div>
+        
+        <div class="results">
+            <div class="result-box" id="ipv4Result">
+                <h3 class="result-title"><i class="fas fa-network-wired"></i> DNS های نسل 4</h3>
+                <div id="ipv4ResultsContainer">
+                    <!-- DNS items will be added here -->
+                </div>
+            </div>
+            
+            <div class="result-box" id="ipv6Result">
+                <h3 class="result-title"><i class="fas fa-server"></i> DNS های نسل 6</h3>
+                <div id="ipv6ResultsContainer">
+                    <!-- DNS items will be added here -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+       وصل شده به هاست امازون
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const daysSlider = document.getElementById('daysSlider');
+        const daysValue = document.getElementById('daysValue');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+        const countryItems = document.querySelectorAll('.country-item');
+        const generateIpv4Btn = document.getElementById('generateIpv4');
+        const generateIpv6Btn = document.getElementById('generateIpv6');
+        const ipv4Result = document.getElementById('ipv4Result');
+        const ipv6Result = document.getElementById('ipv6Result');
+        const ipv4ResultsContainer = document.getElementById('ipv4ResultsContainer');
+        const ipv6ResultsContainer = document.getElementById('ipv6ResultsContainer');
+        
+        // Selected country
+        let selectedCountry = 'germany';
+        
+        // Update slider values
+        daysSlider.addEventListener('input', function() {
+            daysValue.textContent = `${this.value} روز`;
+        });
+        
+        volumeSlider.addEventListener('input', function() {
+            volumeValue.textContent = `${this.value} GB`;
+        });
+        
+        // Country selection
+        countryItems.forEach(item => {
+            item.addEventListener('click', function() {
+                countryItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                selectedCountry = this.dataset.country;
+            });
+        });
+        
+        // Generate IPv4 DNS
+        generateIpv4Btn.addEventListener('click', function() {
+            ipv6Result.classList.remove('active');
+            ipv4Result.classList.add('active');
+            
+            const days = daysSlider.value;
+            const volume = volumeSlider.value;
+            
+            ipv4ResultsContainer.innerHTML = '';
+            
+            // Generate 2 DNS addresses based on country
+            const dns1 = generateIpv4Dns(selectedCountry);
+            const dns2 = generateIpv4Dns(selectedCountry, true);
+            
+            addDnsItem(ipv4ResultsContainer, dns1, 'IPv4', days, volume);
+            addDnsItem(ipv4ResultsContainer, dns2, 'IPv4', days, volume);
+        });
+        
+        // Generate IPv6 DNS
+        generateIpv6Btn.addEventListener('click', function() {
+            ipv4Result.classList.remove('active');
+            ipv6Result.classList.add('active');
+            
+            const days = daysSlider.value;
+            const volume = volumeSlider.value;
+            
+            ipv6ResultsContainer.innerHTML = '';
+            
+            // Generate 2 DNS addresses based on country
+            const dns1 = generateIpv6Dns(selectedCountry);
+            const dns2 = generateIpv6Dns(selectedCountry, true);
+            
+            addDnsItem(ipv6ResultsContainer, dns1, 'IPv6', days, volume);
+            addDnsItem(ipv6ResultsContainer, dns2, 'IPv6', days, volume);
+        });
+        
+        // Helper functions
+        function generateIpv4Dns(country, isSecondary = false) {
+            const prefixes = {
+                germany: '78.159',
+                brazil: '191.252',
+                lebanon: '95.179',
+                canada: '99.248',
+                iran: '37.156',
+                uae: '94.200',
+                iraq: '37.236',
+                usa: '69.162'
+            };
+            
+            const suffix1 = Math.floor(Math.random() * 255);
+            const suffix2 = Math.floor(Math.random() * 255);
+            
+            return isSecondary 
+                ? `10.202.10.10`
+                : `${prefixes[country]}.${suffix1}.${suffix2}`;
+        }
+        
+        function generateIpv6Dns(country, isSecondary = false) {
+            const prefixes = {
+                germany: '2a01',
+                brazil: '2804',
+                lebanon: '2a05',
+                canada: '2607',
+                iran: '2a00',
+                uae: '2a06',
+                iraq: '2a00',
+                usa: '2604'
+            };
+            
+            const part1 = Math.floor(Math.random() * 65535).toString(16);
+            const part2 = Math.floor(Math.random() * 65535).toString(16);
+            
+            return isSecondary 
+                ? `${prefixes[country]}:${part1}:${part2}::1`
+                : `${prefixes[country]}:${part1}:${part2}::0`;
+        }
+        
+        function addDnsItem(container, address, type, days, volume) {
+            const dnsItem = document.createElement('div');
+            dnsItem.className = 'dns-item';
+            
+            dnsItem.innerHTML = `
+                <div>
+                    <div class="dns-address">${address}</div>
+                    <small>مدت اعتبار: ${days} روز | حجم: ${volume} GB</small>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="dns-type">${type}</span>
+                    <button class="copy-btn" onclick="copyToClipboard('${address}')">
+                        <i class="far fa-copy"></i> کپی
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(dnsItem);
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('آدرس DNS با موفقیت کپی شد!');
+            }).catch(err => {
+                console.error('خطا در کپی کردن: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
